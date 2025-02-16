@@ -122,8 +122,8 @@ export const load = async () => {
       }
     })
     
-    await console.log(JSON.stringify(menuDocs, null, 2));
-    // await console.log(JSON.stringify(standardItems, null, 2));
+    // await console.log(JSON.stringify(menuDocs[1], null, 2));
+    await console.log(JSON.stringify(standardItems, null, 2));
 
     menuDocs.forEach((menuDoc) => {
       menuDoc["menuItems"].forEach((menuItem) => {

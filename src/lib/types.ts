@@ -45,3 +45,12 @@ export interface PageData {
   shopItems: ShopItem[];
   menuDocs: Menu[];
 }
+
+export interface StandardItems {
+  [key: string]: StandardCustomisationSelection[]
+}
+
+export interface StandardCustomisationSelection {
+  name: string;
+  price: number;
+}
