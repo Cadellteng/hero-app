@@ -6,13 +6,30 @@ import { activeLocation } from '$lib/stores';
 
 console.log("Running +page.ts for main page...");
 
+interface CustomisationMenuOptions {
+  name: string;
+  price: number;
+}
+
+interface CustomisationMenu {
+  optionsAreFree?: boolean;
+  options?: null | CustomisationMenuOptions[];
+  optionsRef?: string | null;
+  title?: string;
+  required?: boolean;
+  maxSelections?: number;
+}
+
 interface MenuItem {
-  itemBasePrice: number;
-  itemImage: string;
   itemName: string;
+  itemImage: string;
+  itemBasePrice: number;
+  isCustomizable: boolean;
+  customisationMenu?: CustomisationMenu[];
 }
 
 interface Menu {
+  id:string;
   subMenu: string;
   menuItems: MenuItem[];
 }
@@ -23,7 +40,15 @@ interface ShopItem {
   shopImage: string;
   type: string;
   category?: string[];
-  menu?: Menu[];
+}
+
+interface StandardItems {
+  [key: string]: StandardCustomisationSelection[]
+}
+
+interface StandardCustomisationSelection {
+  name: string;
+  price: number;
 }
 
 export const load = async () => {
@@ -37,19 +62,19 @@ export const load = async () => {
 
     //* This part of the code is to query the firestore database
     const heroShop = getFirestore("hero-shop");
-    const collectionName = "super-huat-88-hawker-centre";
-    console.log(`Attempting to fetch documents from collection: ${collectionName}`);
+    const shopCollection = "super-huat-88-hawker-centre";
+    console.log(`Attempting to fetch documents from collection: ${shopCollection}`);
 
-    const querySnapshot = await getDocs(collection(heroShop, collectionName));
+    const shopRef = collection(heroShop, shopCollection)
+    const shopSnapshot = await getDocs(shopRef);
+    const shopItems:ShopItem[] = [];
     
-    if (querySnapshot.empty) {
-      console.log(`No documents found in collection: ${collectionName}`);
-      return { items: [] };
+    if (shopSnapshot.empty) {
+      console.log(`No documents found in collection: ${shopCollection}`);
+      return { shopItems: [] };
     }
-
-    const items:ShopItem[] = [];
     let shopName;
-    querySnapshot.forEach((doc) => {
+    shopSnapshot.forEach((doc) => {
       const docId = doc.id;
       const docData = doc.data();
       if (docId === "main") {
@@ -57,7 +82,7 @@ export const load = async () => {
         activeLocation.set(shopName);
         return;
       }
-      items.push({
+      shopItems.push({
         id: docId,
         shopName: docData.shopName,
         shopImage: docData.shopImage,
@@ -66,13 +91,54 @@ export const load = async () => {
       });
     });
 
-    // Sort items by shopName in alphabetical order
-    items.sort((a, b) => a.shopName.localeCompare(b.shopName));
+    // Sort shopItems by shopName in alphabetical order
+    shopItems.sort((a, b) => a.shopName.localeCompare(b.shopName));
 
-    console.log(JSON.stringify(items, null, 2));
+    // console.log(JSON.stringify(shopItems, null, 2));
+
+    const defaultShopId = shopItems[0]["id"];
+    const menuRef = collection(heroShop, shopCollection, defaultShopId, "menu");
+    const menuSnapshot = await getDocs(menuRef);
+    const menuDocs: Menu[] = [];
+    if (menuSnapshot.empty) {
+      console.log(`No documents found in menu sub-collection`);
+      return { menuDocs: [] as Menu[] };
+    }
+
+    let standardItems: StandardItems = {};
+    menuSnapshot.forEach((doc) => {
+      const docId = doc.id;
+      const docData = doc.data();
+      if (docId === "standard") {
+        standardItems = docData as StandardItems;
+        return
+      } else {
+        menuDocs.push({
+          id:docId,
+          subMenu: docData.subMenu,
+          menuItems: docData.menuItems,
+          ...docData
+        });
+      }
+    })
+    
+    await console.log(JSON.stringify(menuDocs, null, 2));
+    // await console.log(JSON.stringify(standardItems, null, 2));
+
+    menuDocs.forEach((menuDoc) => {
+      menuDoc["menuItems"].forEach((menuItem) => {
+        if(menuItem["customisationMenu"]?.length === 0) {
+          return
+        } else {
+          menuItem["customisationMenu"]?.forEach((customisationSet) => {
+            customisationSet["options"] = standardItems[customisationSet["optionsRef"] as string]
+          })
+        }
+      })
+    })
 
     return {
-      items, shopName
+      shopItems, shopName, menuDocs
     };
   } catch (error) {
     console.error("Error fetching items from Firestore:", error);

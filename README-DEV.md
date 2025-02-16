@@ -1,12 +1,12 @@
 ### Todo
-1. Create menu data structure in Firebase
-2. Create a new menu database for each shop
-3. Link menu from shop database to the menu one instead
-4. Create menu for each shop
-5. Create a user database for each user
-6. Add a receipt in bottom menu
-7. Remove notification bell in top right - replace with "eat here", "take away" etc...
-8. Start planning on the vendor app
+1. Create menu data structure in Firebase - Done
+2. Create a new menu sub-collection for each shop - Done
+3. Create menu for each shop - Done
+4. Create a user database for each user
+5. Add a receipt in bottom menu
+6. Remove notification bell in top right - replace with "eat here", "take away" etc...
+7. Start planning on the vendor app
+8. Plan how to incorporate customisation into order with price and details (adds to overall price if any)
 
 ### Vision
 1. The preferred digital experience for retail shops

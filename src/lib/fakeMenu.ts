@@ -58,27 +58,36 @@ const fakeMenu:Menu[] = [
             "options": standardSides,
             "optionsAreFree": true, // can be true, false or "custom"
           },
+          {
+            "title": "Additional sides",
+            "maxSelections": 4, // instructions will say "select 1"
+            "required": false,
+            "options": standardSides,
+            "optionsAreFree": false, // can be true, false or "custom"
+          },
         ]
       }
     ]
   },
   {
-      "subMenu": "spaghetti",
-      "menuItems":
-      [
-          {
-              "itemName": "Striploin Carbonara",
-              "itemBasePrice": 12.8,
-              "itemImage": "https://tarateaspoon.com/wp-content/uploads/2021/11/Steak-Linguini-with-Olives-Horiz.jpeg",
-              "isCustomizable": false,
-          },
-          {
-              "itemName": "Filet Mignon",
-              "itemBasePrice": 9.8,
-              "itemImage": "https://whatmollymade.com/wp-content/uploads/2023/03/steak-pasta-8.jpg",
-              "isCustomizable": false,
-          }
-      ]
+    "subMenu": "spaghetti",
+    "menuItems":
+    [
+      {
+        "itemName": "Striploin Carbonara",
+        "itemBasePrice": 12.8,
+        "itemImage": "https://tarateaspoon.com/wp-content/uploads/2021/11/Steak-Linguini-with-Olives-Horiz.jpeg",
+        "isCustomizable": false,
+        "customisationMenu": []
+      },
+      {
+        "itemName": "Filet Mignon",
+        "itemBasePrice": 9.8,
+        "itemImage": "https://whatmollymade.com/wp-content/uploads/2023/03/steak-pasta-8.jpg",
+        "isCustomizable": false,
+        "customisationMenu": []
+      }
+    ]
   }
 ]
 

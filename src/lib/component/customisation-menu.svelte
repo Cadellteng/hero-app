@@ -70,8 +70,13 @@
         {#each customisationMenu as item}
           <div class="customisation-form__customisation_menu-item-title">
             <div class="customisation-form__customisation_menu-item-title-name">
-              <h2>{item.title}</h2>
-              <h3>Select {item.maxSelections}</h3>
+              {#if item.maxSelections === 1}
+                <h2>{item.title}</h2>
+                <h3>Select {item.maxSelections}</h3>
+              {:else if item.maxSelections > 1}
+                <h2>{item.title}</h2>
+                <h3>Select up to {item.maxSelections}</h3>
+              {/if}
             </div>
             {#if item.required}
               <div class="chip required">
@@ -144,7 +149,7 @@
     max-width: 50rem;
     margin: 0 auto;
     background-color: var(--neutral-color);
-    z-index: 100;
+    z-index: 200;
   }
 
   .customisation-form__title {

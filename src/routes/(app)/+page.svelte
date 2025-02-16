@@ -6,14 +6,20 @@
   import CustomisationMenu from '$lib/component/customisation-menu.svelte';
   import { onMount } from 'svelte';
   import { fakeMenu } from '$lib/fakeMenu';
+  import type { PageData, CustomisationParams, Menu } from '$lib/types';
 
-  export let data;
+  export let data: PageData;
   
   // let user: User | null = data.user;
 
   // The first stall item will always be active at load
-  let activeState:boolean[] = [true, ...new Array(data.items.length-1).fill(false)];
-  let activeShop = data.items[0].shopName || undefined;
+  let activeState:boolean[] = [true, ...new Array(data.shopItems.length-1).fill(false)];
+  let activeShop = data.shopItems[0].shopName || "";
+  let menuItems: Menu[] = data.menuDocs;
+
+  // const queryActiveShopMenu = () => {
+
+  // }
 
   function capitalizeFirstLetter(str: string): string {
     if (typeof str !== 'string' || str.length === 0) {
@@ -24,7 +30,7 @@
 
   const handleCardClick = (cardId: number) => {
     activeState = activeState.map((state, index) => index === cardId ? true : false);
-    activeShop = data.items[cardId]?.shopName || undefined;
+    activeShop = data.shopItems[cardId]?.shopName || "";
     // console.log(activeState);
   }
 
@@ -35,7 +41,7 @@
       itemName,
       itemBasePrice,
       itemImage,
-      "customisationMenu": fakeMenu[i]["menuItems"][j]["customisationMenu"],
+      "customisationMenu": menuItems[i]["menuItems"][j]["customisationMenu"],
     }
     // console.log(JSON.stringify(customisationParams,null,2));
     customisationFormVisible = true;
@@ -47,7 +53,7 @@
   <div class="category-stall-container">
     <h1>{$activeLocation}</h1>
     <div class="stall-list">
-      {#each data.items as item, i}
+      {#each data.shopItems as item, i}
         <CategoryStallCard
           shopImage={item.shopImage}
           shopName={item.shopName}
@@ -59,23 +65,21 @@
   </div>
   <div class="menu-cards">
     <h1>{activeShop}</h1>
-    {#if data.items && data.items.length > 0}
-      {#each fakeMenu ?? [] as item, i}
-        <h2>{capitalizeFirstLetter(item.subMenu)}</h2>
-        {#if item?.menuItems}
-        <div class="menu-cards__items">
-          {#each item.menuItems as menuItem, j}
-            <MenuItemCard
-              itemName={menuItem.itemName}
-              itemBasePrice={menuItem.itemBasePrice.toFixed(2)}
-              itemImage={menuItem.itemImage}
-              handleAdd={() => openCustomisationMenu(menuItem.itemName, menuItem.itemBasePrice, menuItem.itemImage, i, j)}
-            />
-          {/each}
-        </div>
-        {/if}
-      {/each}
-    {/if}
+    {#each menuItems ?? [] as item, i}
+      <h2>{capitalizeFirstLetter(item.subMenu)}</h2>
+      {#if item?.menuItems}
+      <div class="menu-cards__items">
+        {#each item.menuItems as menuItem, j}
+          <MenuItemCard
+            itemName={menuItem.itemName}
+            itemBasePrice={menuItem.itemBasePrice.toFixed(2)}
+            itemImage={menuItem.itemImage}
+            handleAdd={() => openCustomisationMenu(menuItem.itemName, menuItem.itemBasePrice, menuItem.itemImage, i, j)}
+          />
+        {/each}
+      </div>
+      {/if}
+    {/each}
   </div>
 
   <CustomisationMenu
